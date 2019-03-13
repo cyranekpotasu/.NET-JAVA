@@ -45,15 +45,7 @@ namespace Lab01
         };
 
 
-        ObservableCollection<Person> people = new ObservableCollection<Person>
-        {
-        };
-    
-
-        public ObservableCollection<Person> Items
-        {
-            get => people;
-        }
+        public ObservableCollection<Person> Items { get; } = new ObservableCollection<Person> { };
 
         public MainWindow()
         {
@@ -66,7 +58,7 @@ namespace Lab01
             if (i == picture_urls.Count<string>())
                 i = 0;
             DownloadImage(picture_urls[i++]);
-            people.Add(new Person { Age = int.Parse(ageTextBox.Text), Name = nameTextBox.Text, Image = bitmap });
+            Items.Add(new Person { Age = int.Parse(ageTextBox.Text), Name = nameTextBox.Text, Image = bitmap });
         }
 
         private void AddNewImage(object sender, RoutedEventArgs e)
@@ -80,6 +72,7 @@ namespace Lab01
             this.imageUrl = imageUrl;
             Download();
         }
+
         public void Download()
         {
             try
@@ -95,11 +88,13 @@ namespace Lab01
                 Console.WriteLine(e.Message);
             }
         }
+
         public ImageSource GetImage()
         {
             var handle = bitmap.GetHbitmap();
             return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         }
+
         public void SaveImage(string filename, ImageFormat format)
         {
             if (bitmap != null)
@@ -115,7 +110,7 @@ namespace Lab01
                 MessageBox.Show("Item is not available in ListBox");
             else
             {
-                bitmap = people[index].Image;
+                bitmap = Items[index].Image;
                 imageBox.Source = GetImage();
             }
         }
