@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Media;
 
 namespace Lab01
 {
@@ -12,5 +12,6 @@ namespace Lab01
         public string Name { get; set; }
         public int Age { get; set; }
         public Bitmap Image { get; set; }
+        public ImageSource ImagePath { get; set; }
     }
 }

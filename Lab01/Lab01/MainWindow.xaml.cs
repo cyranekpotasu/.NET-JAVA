@@ -58,7 +58,7 @@ namespace Lab01
             if (i == picture_urls.Count<string>())
                 i = 0;
             DownloadImage(picture_urls[i++]);
-            Items.Add(new Person { Age = int.Parse(ageTextBox.Text), Name = nameTextBox.Text, Image = bitmap });
+            Items.Add(new Person { Age = int.Parse(ageTextBox.Text), Name = nameTextBox.Text, Image = bitmap,ImagePath = GetImage() });
         }
 
         private void AddNewImage(object sender, RoutedEventArgs e)
