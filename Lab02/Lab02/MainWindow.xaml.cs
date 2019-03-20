@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +26,11 @@ namespace Lab02
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string randomImgUrl = "https://source.unsplash.com/random/250x250";
+        private static readonly HttpClient client = new HttpClient();
+
+
+
         async Task<int> GetNumberAsync(int number)
         {
             if (number < 0)
@@ -34,6 +42,32 @@ namespace Lab02
                 await Task.Delay(100);
             }
             return number;
+        }
+
+        async void AddPersonLoop()
+        {
+            int i = 1;
+
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    MemoryStream memory = await client.GetStreamAsync(randomImgUrl) as MemoryStream;
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = memory;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                    Dispatcher.Invoke(() =>
+                    {
+                        Items.Add(new Person { Name = $"Person{i}", Age = i, Image = bitmap });
+                    });
+
+                    i++;
+                    await Task.Delay(3000);
+                }
+            });
         }
 
         protected void UpdateProgressBlock(string text, TextBlock textBlock)
