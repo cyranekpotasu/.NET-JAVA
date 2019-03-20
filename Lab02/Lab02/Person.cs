@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Lab02
 {
@@ -11,5 +13,6 @@ namespace Lab02
     {
         public string Name { get; set; }
         public int Age { get; set; }
+        public BitmapImage Image { get; set; }
     }
 }
