@@ -52,7 +52,8 @@ namespace Lab02
             {
                 while (true)
                 {
-                    MemoryStream memory = await client.GetStreamAsync(randomImgUrl) as MemoryStream;
+                    var response = await client.GetAsync(randomImgUrl);
+                    MemoryStream memory = await response.Content.ReadAsStreamAsync() as MemoryStream;
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.StreamSource = memory;
