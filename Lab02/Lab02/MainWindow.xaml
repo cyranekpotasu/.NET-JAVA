@@ -1,0 +1,44 @@
+﻿<Window x:Class="Lab02.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lab02"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListBox Margin="20" ItemsSource="{Binding Items}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Name}" Width="100"/>
+                        <TextBlock Text="{Binding Path=Age}" Width="100"/>
+                        <Image Source="{Binding Path=Image}" Height="50" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Column="1" Margin="10,20,30,20" Orientation="Vertical">
+            <TextBlock TextWrapping="Wrap" Text="Name"/>
+            <TextBox Name ="nameTextBox" Height="23" TextWrapping="Wrap" Text="Jarosław" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="Wrap" Text="Age"/>
+            <TextBox Name="ageTextBox" Height="23" TextWrapping="Wrap" Text="99"  Margin="0,0,0,10"/>
+            <Button Name = "addNewPersonButton" Content="Add new person" Click="AddNewPersonButton_Click"/>
+            <TextBlock x:Name="progressTextBlock" TextWrapping="Wrap"><InlineUIContainer>
+                    <Button x:Name="loadImageButton" Content="Load Image" Width="359" Click="LoadImageButton_Click"/>
+                </InlineUIContainer></TextBlock>
+            <Grid Height="203" Margin="0,40,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75*"/>
+                    <ColumnDefinition Width="200*"/>
+                    <ColumnDefinition Width="81*"/>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="pictureBox" Grid.Column="1" HorizontalAlignment="Left" Height="200" VerticalAlignment="Top" Width="200"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
