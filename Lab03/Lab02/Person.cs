@@ -12,7 +12,10 @@ namespace Lab02
     public class Person
     {
         public string Name { get; set; }
+        public string City { get; set; }
+        public string Email { get; set; }
         public int Age { get; set; }
+        public DateTime Birthday { get; set; }
         public BitmapImage Image { get; set; }
     }
 }
