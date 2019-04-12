@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Lab03;
+using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -17,7 +19,7 @@ namespace Lab02
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string randomImgUrl = "https://randomuser.me/api/?format=xml";
+        private string randomPersonUrl = "https://randomuser.me/api/?format=json";
 
         private static readonly HttpClient client = new HttpClient();
         BackgroundWorker worker = new BackgroundWorker();
@@ -37,169 +39,50 @@ namespace Lab02
         async void AddPersonLoop(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-
-            int age = 1;
-            string person = null;
-            string city = null;
-            string email = null;
             DateTime birthday = DateTime.Parse("2008-11-01T19:35:00.0000000Z");
-            int i = 0;
-            while (i != countJob)
+            for (int i = 0; i < countJob; i++)
             {
-                var bitmap2 = new BitmapImage();
-                var responseXml = await client.GetAsync(randomImgUrl);
-                MemoryStream memoryXml = await responseXml.Content.ReadAsStreamAsync() as MemoryStream;
-                if (worker.CancellationPending == true)
+                int age = 1;
+                string person = null;
+                string city = null;
+                string email = null;
+                BitmapImage bitmap = null;
+                var responseJson = await client.GetStringAsync(randomPersonUrl);
+                JToken personJson = JObject.Parse(responseJson)["results"][0];
+
+                if (worker.CancellationPending)
                 {
                     worker.ReportProgress(0, "Cancelled");
                     e.Cancel = true;
                     return;
                 }
-                else
-                    using (XmlReader reader = XmlReader.Create(memoryXml, new XmlReaderSettings()))
-                    {
+ 
+                if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
+                    person = (string)personJson["login"]["username"];
 
-                        while (reader.Read())
-                        {
-                            switch (reader.NodeType)
-                            {
-                                case XmlNodeType.Element:
-                                    switch (reader.Name)
-                                    {
-                                        case "username":
-                                            if (!(bool)nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
+                if (ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked) == true)
+                    age = (int)personJson["dob"]["age"];
 
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
-                                                        person = reader.Value;
-                                                        /*worker.ReportProgress(
-                                                        (int)Math.Round((float)i * 100.0 / (float)countJob),
-                                                        "Loading " + person + "...");*/
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                        case "age":
-                                            if (!(bool)ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
-                                                        Int32.TryParse(reader.Value, out age);
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                        case "city":
-                                            if (!(bool)cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
-                                                        city = reader.Value;
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                        case "email":
-                                            if (!(bool)emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
-                                                        email = reader.Value;
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                        case "date":
-                                            if (!(bool)birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
-                                                        birthday = DateTime.Parse(reader.Value);
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                        case "medium":
-                                            if (!(bool)imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked))
-                                            {
-                                                break;
-                                            }
-                                            while (reader.Read())
-                                            {
-                                                switch (reader.NodeType)
-                                                {
-                                                    case XmlNodeType.Text:
+                if (cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked) == true)
+                    city = (string)personJson["location"]["city"];
 
-                                                        var response = await client.GetAsync(reader.Value);
-                                                        MemoryStream memory = await response.Content.ReadAsStreamAsync() as MemoryStream;
-                                                        var bitmap = new BitmapImage();
-                                                        bitmap.BeginInit();
-                                                        bitmap.StreamSource = memory;
-                                                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                                        bitmap.EndInit();
-                                                        bitmap.Freeze();
-                                                        bitmap2 = bitmap;
-                                                        break;
-                                                }
-                                                break;
-                                            }
-                                            break;
-                                    }
-                                    break;
-                            }
-                        }
-                        i++;
-                        await Task.Delay(3000);
-                    }
-                Application.Current.Dispatcher.Invoke(() =>
+                if (emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked) == true)
+                    email = (string)personJson["email"];
+
+                if (birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked) == true)
+                    birthday = (DateTime)personJson["dob"]["date"];
+
+                if (imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked) == true)
+                    await Dispatcher.Invoke(async () =>
+                     {
+                         bitmap = await HttpImageReader.GetImage((string)personJson["picture"]["medium"]);
+                     });
+
+                Dispatcher.Invoke(() =>
                 {
-                    if (!(bool)imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked))
-                    {
-                        if (!(bool)ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked))
-                            if (!(bool)birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked))
-                                Items.Add(new Person { Name = person, City = city, Email = email });
-                            else
-                                Items.Add(new Person { Name = person, City = city, Email = email, Birthday = birthday });
-                        else
-                           if (!(bool)birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked))
-                                Items.Add(new Person { Name = person, Age = age, City = city, Email = email });
-                           else
-                                Items.Add(new Person { Name = person, Age = age, City = city, Email = email, Birthday = birthday });
-                    }
-                    else
-                        Items.Add(new Person { Name = person, Age = age, Image = bitmap2, City = city, Email = email, Birthday = birthday });
+                    Items.Add(new Person { Name = person, Age = age, Image = bitmap, City = city, Email = email, Birthday = birthday });
                 });
+              
             }
             //  worker.ReportProgress(100, "Done");
         }
