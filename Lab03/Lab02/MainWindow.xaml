@@ -29,11 +29,11 @@
 
 				<TextBlock TextWrapping="Wrap" Text="City" Margin="100,0,198,359"/>
 				<TextBox x:Name ="cityTextBox" TextWrapping="Wrap" Text="Tarnowskie Góry" Margin="91,25,196,314"/>
-				<TextBlock TextWrapping="Wrap" Margin="244,0,43,352" RenderTransformOrigin="0.667,0.185"><Run Text="B"/><Run Text="irthday"/></TextBlock>
-				<TextBox x:Name ="timeTextBox" TextWrapping="Wrap" Text="1995-04-13T10:15:35Z" Margin="225,25,0,314"/>
+				<TextBlock TextWrapping="Wrap" Margin="244,0,43,352" RenderTransformOrigin="0.667,0.185"><Run Text="B"/><Run Text="Birthday"/></TextBlock>
 				<TextBlock TextWrapping="Wrap"  Text="Emial"  Margin="158,0,164,362"/>
 				<TextBox x:Name ="emailTextBox" TextWrapping="Wrap" Text="jarosław@wp.pl" Margin="165,25,136,314"/>
 				<Button x:Name="loadImageButton" Content="Load Image" Click="LoadImageButton_Click" Margin="0,85,0,271"/>
+				<DatePicker  x:Name="datePicker" HorizontalAlignment="Left" Margin="225,25,0,0" VerticalAlignment="Top" Height="42" Width="136"/>
 			</Grid>
 		</Viewbox>
 		<Grid Grid.Column="0" Margin="20,10,0,0">

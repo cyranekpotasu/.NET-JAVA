@@ -107,8 +107,9 @@ namespace Lab02
                 Name = nameTextBox.Text,
                 Image = pictureBox.Source as BitmapImage,
                 City = cityTextBox.Text,
-                Email = emailTextBox.Text
-            });
+                Email = emailTextBox.Text,
+                Birthday = (datePicker.SelectedDate != null) ? (DateTime)datePicker.SelectedDate : DateTime.Parse("2008-11-01T19:35:00.0000000Z")
+        });
         }
 
         private void LoadImageButton_Click(object sender, RoutedEventArgs e)
