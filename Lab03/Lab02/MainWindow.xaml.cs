@@ -1,15 +1,12 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Net;
+using System.Data.Entity;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Xml;
 
 namespace Lab03
 {
@@ -19,6 +16,7 @@ namespace Lab03
     public partial class MainWindow : Window
     {
         private string randomPersonUrl = "https://randomuser.me/api/?format=json";
+        private PersonContext context = new PersonContext();
 
         private static readonly HttpClient client = new HttpClient();
         BackgroundWorker worker = new BackgroundWorker();
@@ -55,7 +53,7 @@ namespace Lab03
                     e.Cancel = true;
                     return;
                 }
- 
+
                 if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
                     person = (string)personJson["login"]["username"];
 
@@ -79,18 +77,22 @@ namespace Lab03
 
                 Dispatcher.Invoke(() =>
                 {
-                    Items.Add(new Person { Name = person, Age = age, Image = bitmap, City = city, Email = email, Birthday = birthday });
+                    context.People.Add(new Person
+                    {
+                        Name = person,
+                        Age = age,
+                        Image = ImageConverter.ToByteArray(bitmap),
+                        City = city,
+                        Email = email,
+                        Birthday = birthday
+                    });
+                    context.SaveChanges();
                 });
-              
+
             }
             //  worker.ReportProgress(100, "Done");
         }
 
-        public ObservableCollection<Person> Items { get; } = new ObservableCollection<Person>
-        {
-            new Person { Name = "P1", Age = 1 },
-            new Person { Name = "P2", Age = 2 }
-        };
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -100,14 +102,16 @@ namespace Lab03
 
         private void AddNewPersonButton_Click(object sender, RoutedEventArgs e)
         {
-            Items.Add(new Person
+            var person = new Person
             {
                 Age = int.Parse(ageTextBox.Text),
                 Name = nameTextBox.Text,
-                Image = pictureBox.Source as BitmapImage,
+                Image = ImageConverter.ToByteArray(pictureBox.Source as BitmapImage),
                 City = cityTextBox.Text,
                 Email = emailTextBox.Text
-            });
+            };
+            context.People.Add(person);
+            context.SaveChanges();
         }
 
         private void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -140,5 +144,32 @@ namespace Lab03
                 worker.RunWorkerAsync();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Data.CollectionViewSource personViewSource =
+                ((System.Windows.Data.CollectionViewSource)(this.FindResource("personViewSource")));
+            // Load data by setting the CollectionViewSource.Source property:
+            // personViewSource.Source = [generic data source]
+            context.People.Load();
+            personViewSource.Source = context.People.Local;
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {   
+            base.OnClosing(e);
+            context.Dispose();
+        }
+
+        private void ButtonRemove_Click(object sender, RoutedEventArgs e)
+        {
+            Person person = (Person)personListView.SelectedItem;
+            context.People.Remove(person);
+            context.SaveChanges();
+        }
+
+        private void ButtonSave_Click(object sender, RoutedEventArgs e)
+        {
+            context.SaveChanges();
+        }
     }
 }
