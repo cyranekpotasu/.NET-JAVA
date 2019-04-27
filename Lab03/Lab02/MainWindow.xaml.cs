@@ -1,4 +1,3 @@
-﻿using Lab03;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,7 +11,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml;
 
-namespace Lab02
+namespace Lab03
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
