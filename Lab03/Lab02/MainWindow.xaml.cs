@@ -108,7 +108,8 @@ namespace Lab03
                 Name = nameTextBox.Text,
                 Image = ImageConverter.ToByteArray(pictureBox.Source as BitmapImage),
                 City = cityTextBox.Text,
-                Email = emailTextBox.Text
+                Email = emailTextBox.Text,
+                Birthday = datePicker.SelectedDate
             };
             context.People.Add(person);
             context.SaveChanges();
