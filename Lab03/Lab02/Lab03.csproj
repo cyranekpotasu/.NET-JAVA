@@ -77,13 +77,22 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HttpImageReader.cs" />
+    <Compile Include="ImageConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model1.cs" />
+    <Compile Include="Migrations\201904271130062_InitialCreate.cs" />
+    <Compile Include="Migrations\201904271130062_InitialCreate.Designer.cs">
+      <DependentUpon>201904271130062_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904271742105_MakeBirthdayNullable.cs" />
+    <Compile Include="Migrations\201904271742105_MakeBirthdayNullable.Designer.cs">
+      <DependentUpon>201904271742105_MakeBirthdayNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -98,11 +107,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201904271130062_InitialCreate.resx">
+      <DependentUpon>201904271130062_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904271742105_MakeBirthdayNullable.resx">
+      <DependentUpon>201904271742105_MakeBirthdayNullable.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\Person.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
