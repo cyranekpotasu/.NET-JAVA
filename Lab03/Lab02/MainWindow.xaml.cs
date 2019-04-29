@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -15,12 +16,10 @@ namespace Lab03
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string randomPersonUrl = "https://randomuser.me/api/?format=json";
         private PersonContext context = new PersonContext();
-
-        private static readonly HttpClient client = new HttpClient();
         BackgroundWorker worker = new BackgroundWorker();
-        int countJob;
+        private static readonly HttpClient client = new HttpClient();
+
 
         public MainWindow()
         {
@@ -35,18 +34,10 @@ namespace Lab03
 
         async void AddPersonLoop(object sender, DoWorkEventArgs e)
         {
+            int countJob = int.Parse(Dispatcher.Invoke(() => countTextBox.Text));
             BackgroundWorker worker = sender as BackgroundWorker;
-            DateTime birthday = DateTime.Parse("2008-11-01T19:35:00.0000000Z");
             for (int i = 0; i < countJob; i++)
             {
-                int age = 1;
-                string person = null;
-                string city = null;
-                string email = null;
-                BitmapImage bitmap = null;
-                var responseJson = await client.GetStringAsync(randomPersonUrl);
-                JToken personJson = JObject.Parse(responseJson)["results"][0];
-
                 if (worker.CancellationPending)
                 {
                     //worker.ReportProgress(0, "Cancelled");
@@ -54,38 +45,11 @@ namespace Lab03
                     return;
                 }
 
-                if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
-                    person = (string)personJson["login"]["username"];
-
-                if (ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked) == true)
-                    age = (int)personJson["dob"]["age"];
-
-                if (cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked) == true)
-                    city = (string)personJson["location"]["city"];
-
-                if (emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked) == true)
-                    email = (string)personJson["email"];
-
-                if (birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked) == true)
-                    birthday = (DateTime)personJson["dob"]["date"];
-
-                if (imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked) == true)
-                    await Dispatcher.Invoke(async () =>
-                     {
-                         bitmap = await HttpImageReader.GetImage((string)personJson["picture"]["medium"]);
-                     });
+                var person = await GetPersonData();
 
                 Dispatcher.Invoke(() =>
                 {
-                    context.People.Add(new Person
-                    {
-                        Name = person,
-                        Age = age,
-                        Image = ImageConverter.ToByteArray(bitmap),
-                        City = city,
-                        Email = email,
-                        Birthday = birthday
-                    });
+                    context.People.Add(person);
                     context.SaveChanges();
                 });
 
@@ -93,6 +57,46 @@ namespace Lab03
             //  worker.ReportProgress(100, "Done");
         }
 
+        private async Task<Person> GetPersonData()
+        {
+            string person = null, city = null, email = null;
+            DateTime? birthday = null;
+            int age = 0;
+            BitmapImage bitmap = null;
+
+            var personJson = await PersonFetcher.FetchPerson();
+
+            if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
+                person = (string)personJson["login"]["username"];
+
+            if (ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked) == true)
+                age = (int)personJson["dob"]["age"];
+
+            if (cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked) == true)
+                city = (string)personJson["location"]["city"];
+
+            if (emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked) == true)
+                email = (string)personJson["email"];
+
+            if (birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked) == true)
+                birthday = (DateTime)personJson["dob"]["date"];
+
+            if (imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked) == true)
+                await Dispatcher.Invoke(async () =>
+                {
+                    bitmap = await HttpImageReader.GetImage((string)personJson["picture"]["medium"]);
+                });
+
+            return new Person
+            {
+                Name = person,
+                Age = age,
+                Image = ImageConverter.ToByteArray(bitmap),
+                City = city,
+                Email = email,
+                Birthday = birthday
+            };
+        }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -140,7 +144,6 @@ namespace Lab03
 
         private void RunDataDownload(object sender, RoutedEventArgs e)
         {
-            countJob = int.Parse(countTextBox.Text);
             if (worker.IsBusy != true)
                 worker.RunWorkerAsync();
         }
@@ -159,6 +162,7 @@ namespace Lab03
         {   
             base.OnClosing(e);
             context.Dispose();
+            client.Dispose();
         }
 
         private void ButtonRemove_Click(object sender, RoutedEventArgs e)
