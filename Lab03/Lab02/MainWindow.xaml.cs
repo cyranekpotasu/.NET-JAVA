@@ -49,7 +49,7 @@ namespace Lab03
 
                 if (worker.CancellationPending)
                 {
-                    worker.ReportProgress(0, "Cancelled");
+                    //worker.ReportProgress(0, "Cancelled");
                     e.Cancel = true;
                     return;
                 }
