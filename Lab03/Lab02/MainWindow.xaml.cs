@@ -1,10 +1,9 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -17,44 +16,53 @@ namespace Lab03
     public partial class MainWindow : Window
     {
         private PersonContext context = new PersonContext();
-        BackgroundWorker worker = new BackgroundWorker();
+        private CancellationTokenSource cts = new CancellationTokenSource();
         private static readonly HttpClient client = new HttpClient();
+
+        class ProgressData
+        {
+            public int Percentage { get; set; }
+            public string Message { get; set; }
+        }
 
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += AddPersonLoop;
-            worker.ProgressChanged += Worker_ProgressChanged;
         }
 
 
-        async void AddPersonLoop(object sender, DoWorkEventArgs e)
+        private async void AddPersonLoop(IProgress<ProgressData> progress)
         {
             int countJob = int.Parse(Dispatcher.Invoke(() => countTextBox.Text));
-            BackgroundWorker worker = sender as BackgroundWorker;
             for (int i = 0; i < countJob; i++)
             {
-                if (worker.CancellationPending)
+                cts.Token.ThrowIfCancellationRequested();
+                progress.Report(new ProgressData
                 {
-                    //worker.ReportProgress(0, "Cancelled");
-                    e.Cancel = true;
+                    Percentage = i * 100 / countJob,
+                    Message = $"Fetched {i}/{countJob} people"
+                });
+
+                Person person = null;
+                try
+                {
+                    person = await GetPersonData();
+                }
+                catch (HttpRequestException)
+                {
+                    dataTextBlock.Text = "Connection error occured.";
                     return;
                 }
-
-                var person = await GetPersonData();
 
                 Dispatcher.Invoke(() =>
                 {
                     context.People.Add(person);
                     context.SaveChanges();
                 });
-
             }
-            //  worker.ReportProgress(100, "Done");
+            progress.Report(new ProgressData { Percentage = 100, Message = "Done" });
         }
 
         private async Task<Person> GetPersonData()
@@ -98,10 +106,10 @@ namespace Lab03
             };
         }
 
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void OnProgressChanged(object sender, ProgressData e)
         {
-            dataProgressBar.Value = e.ProgressPercentage;
-            dataTextBlock.Text = e.UserState as string;
+            dataProgressBar.Value = e.Percentage;
+            dataTextBlock.Text = e.Message;
         }
 
         private void AddNewPersonButton_Click(object sender, RoutedEventArgs e)
@@ -135,17 +143,24 @@ namespace Lab03
 
         private void CancelButton(object sender, RoutedEventArgs e)
         {
-            if (worker.WorkerSupportsCancellation == true)
-            {
-                dataTextBlock.Text = "Cancelling...";
-                worker.CancelAsync();
-            }
+            dataTextBlock.Text = "Cancelling...";
+            cts.Cancel();
         }
 
         private void RunDataDownload(object sender, RoutedEventArgs e)
         {
-            if (worker.IsBusy != true)
-                worker.RunWorkerAsync();
+            var progress = new Progress<ProgressData>();
+            progress.ProgressChanged += OnProgressChanged;
+
+            try
+            {
+                AddPersonLoop(progress);
+            }
+            catch (OperationCanceledException)
+            {
+                dataProgressBar.Value = 0;
+                dataTextBlock.Text = "Canceled.";
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -159,7 +174,7 @@ namespace Lab03
         }
 
         protected override void OnClosing(CancelEventArgs e)
-        {   
+        {
             base.OnClosing(e);
             context.Dispose();
             client.Dispose();
