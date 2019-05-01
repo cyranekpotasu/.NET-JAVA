@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace Lab03
 {
-    static class HttpImageReader
+    public static class HttpImageReader
     {
         public async static Task<BitmapImage> GetImage(string imageUrl)
         {

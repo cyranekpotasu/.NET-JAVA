@@ -8,17 +8,16 @@ using System.Threading.Tasks;
 
 namespace Lab03
 {
-    static class PersonFetcher
+    public static class PersonFetcher
     {
         private static readonly string randomPersonUrl = "https://randomuser.me/api/?format=json";
 
-        public static async Task<JToken> FetchPerson()
+        public static async Task<JToken> FetchPerson(HttpClient client = null)
         {
-            using (var client = new HttpClient())
-            {
-                var responseJson = await client.GetStringAsync(randomPersonUrl);
-                return JObject.Parse(responseJson)["results"][0];
-            }
+            client = client ?? new HttpClient();
+            var responseJson = await client.GetStringAsync(randomPersonUrl);
+            client.Dispose();
+            return JObject.Parse(responseJson)["results"][0];
         }
     }
 }

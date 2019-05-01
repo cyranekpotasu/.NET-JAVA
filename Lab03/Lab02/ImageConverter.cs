@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 
 namespace Lab03
 {
-    static class ImageConverter
+    public static class ImageConverter
     {
         public static byte[] ToByteArray(BitmapImage image)
         {

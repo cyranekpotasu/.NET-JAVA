@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using LiveCharts;
 using LiveCharts.Wpf;
+using System.Data.Entity.Validation;
 
 namespace Lab03
 {
@@ -61,7 +62,7 @@ namespace Lab03
                 Dispatcher.Invoke(() =>
                 {
                     context.People.Add(person);
-                    context.SaveChanges();
+                    TrySaveDb(person);
                 });
             }
             progress.Report(new ProgressData { Percentage = 100, Message = "Done" });
@@ -116,17 +117,40 @@ namespace Lab03
 
         private void AddNewPersonButton_Click(object sender, RoutedEventArgs e)
         {
+            byte[] image = pictureBox.Source == null ? 
+                null : ImageConverter.ToByteArray(pictureBox.Source as BitmapImage); 
+
             var person = new Person
             {
                 Age = int.Parse(ageTextBox.Text),
                 Name = nameTextBox.Text,
-                Image = pictureBox.Source!=null? ImageConverter.ToByteArray(pictureBox.Source as BitmapImage):null,
+                Image = image,
                 City = cityTextBox.Text,
                 Email = emailTextBox.Text,
                 Birthday = datePicker.SelectedDate
             };
             context.People.Add(person);
-            context.SaveChanges();
+            TrySaveDb(person);
+        }
+
+        private void TrySaveDb(Person person)
+        {
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                formErrorMessages.Text = "";
+                foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
+                {
+                    foreach (DbValidationError error in result.ValidationErrors)
+                    {
+                        formErrorMessages.Text += error.ErrorMessage;
+                    }
+                }
+                context.Entry(person).Reload();
+            }
         }
 
         private void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -191,7 +215,22 @@ namespace Lab03
 
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
+                {
+                    formErrorMessages.Text = "";
+                    result.Entry.Reload();
+                    foreach (DbValidationError error in result.ValidationErrors)
+                    {
+                        formErrorMessages.Text += error.ErrorMessage;
+                    }
+                }
+            }
         }
 
         private void ButtonChartPie_Click(object sender, RoutedEventArgs e)
