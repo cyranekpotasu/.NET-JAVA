@@ -18,7 +18,7 @@ namespace Lab03
         {
             get
             {
-                return ImageConverter.ToBitmapImage(Image);
+                return Image!=null?ImageConverter.ToBitmapImage(Image):null;
             }
         }
     }

@@ -101,7 +101,7 @@ namespace Lab03
             {
                 Name = person,
                 Age = age,
-                Image = ImageConverter.ToByteArray(bitmap),
+                Image = bitmap != null ? ImageConverter.ToByteArray(bitmap) : null,
                 City = city,
                 Email = email,
                 Birthday = birthday
@@ -120,7 +120,7 @@ namespace Lab03
             {
                 Age = int.Parse(ageTextBox.Text),
                 Name = nameTextBox.Text,
-                Image = ImageConverter.ToByteArray(pictureBox.Source as BitmapImage),
+                Image = pictureBox.Source!=null? ImageConverter.ToByteArray(pictureBox.Source as BitmapImage):null,
                 City = cityTextBox.Text,
                 Email = emailTextBox.Text,
                 Birthday = datePicker.SelectedDate
