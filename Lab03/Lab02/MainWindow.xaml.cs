@@ -7,6 +7,9 @@ using System.Data.Entity;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Net.NetworkInformation;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace Lab03
 {
@@ -141,6 +144,12 @@ namespace Lab03
         private void RunDataDownload(object sender, RoutedEventArgs e)
         {
             countJob = int.Parse(countTextBox.Text);
+            bool isAvailable = NetworkInterface.GetIsNetworkAvailable();
+            if (!isAvailable)
+            {
+                MessageBox.Show("Sorry, ERR_INTERNET_DISCONNECTED");
+                return;
+            }
             if (worker.IsBusy != true)
                 worker.RunWorkerAsync();
         }
@@ -156,7 +165,7 @@ namespace Lab03
         }
 
         protected override void OnClosing(CancelEventArgs e)
-        {   
+        {
             base.OnClosing(e);
             context.Dispose();
         }
@@ -171,6 +180,12 @@ namespace Lab03
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
             context.SaveChanges();
+        }
+
+        private void ButtonChartPie_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 form = new Window1(context);
+            form.Show();
         }
     }
 }

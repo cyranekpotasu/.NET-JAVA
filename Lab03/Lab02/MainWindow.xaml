@@ -120,6 +120,7 @@
             </ListView>
 			<Button x:Name="buttonRemove" Content="Remove" HorizontalAlignment="Left" Margin="100,0,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="ButtonRemove_Click"/>
             <Button x:Name="buttonSave" Content="Save" HorizontalAlignment="Left"  Grid.Row="2" VerticalAlignment="Top" Width="75" Click="ButtonSave_Click"/>
-        </Grid>
+			<Button x:Name="buttonChartPie" Content="ChartPie" HorizontalAlignment="Left" Margin="200,0,0,0" Grid.Row="2" VerticalAlignment="Top" Width="75" Click="ButtonChartPie_Click"/>
+		</Grid>
     </Grid>
 </Window>
