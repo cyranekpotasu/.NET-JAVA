@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Lab03
 {
-    static class PersonFetcher
+    public static class PersonFetcher
     {
         private static readonly string randomPersonUrl = "https://randomuser.me/api/?format=json";
 
