@@ -102,7 +102,7 @@ namespace Lab03
             {
                 Name = person,
                 Age = age,
-                Image = ImageConverter.ToByteArray(bitmap),
+                Image = bitmap != null ? ImageConverter.ToByteArray(bitmap) : null,
                 City = city,
                 Email = email,
                 Birthday = birthday
