@@ -117,11 +117,14 @@ namespace Lab03
 
         private void AddNewPersonButton_Click(object sender, RoutedEventArgs e)
         {
+            byte[] image = pictureBox.Source == null ? 
+                null : ImageConverter.ToByteArray(pictureBox.Source as BitmapImage); 
+
             var person = new Person
             {
                 Age = int.Parse(ageTextBox.Text),
                 Name = nameTextBox.Text,
-                Image = ImageConverter.ToByteArray(pictureBox.Source as BitmapImage),
+                Image = image,
                 City = cityTextBox.Text,
                 Email = emailTextBox.Text,
                 Birthday = datePicker.SelectedDate
