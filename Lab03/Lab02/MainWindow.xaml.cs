@@ -147,19 +147,19 @@ namespace Lab03
             cts.Cancel();
         }
 
-        private void RunDataDownload(object sender, RoutedEventArgs e)
+        private async void RunDataDownloadAsync(object sender, RoutedEventArgs e)
         {
             var progress = new Progress<ProgressData>();
             progress.ProgressChanged += OnProgressChanged;
 
             try
             {
-                FetchPeopleAsync(progress);
+                await FetchPeopleAsync(progress);
             }
             catch (OperationCanceledException)
             {
                 dataProgressBar.Value = 0;
-                dataTextBlock.Text = "Canceled.";
+                dataTextBlock.Text = "Cancelled.";
             }
         }
 

@@ -51,7 +51,7 @@
                     <TextBlock TextWrapping="Wrap" Text="Automatic data download" Margin="57,5,55,0" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <TextBlock TextWrapping="Wrap" Text="Count" Margin="9,26,218,58"/>
                     <TextBox x:Name ="countTextBox" TextWrapping="Wrap" Text="10" Margin="46,26,186,58"/>
-                    <Button x:Name="runButton" Content="Run" Margin="178,26,2,58" Click="RunDataDownload"/>
+                    <Button x:Name="runButton" Content="Run" Margin="178,26,2,58" Click="RunDataDownloadAsync"/>
                     <ComboBox HorizontalAlignment="Left" Margin="78,26,0,0" VerticalAlignment="Top" Width="95" Height="23">
                         <CheckBox x:Name="nameCheckBox" IsChecked="true"  Content="Name"/>
                         <CheckBox x:Name="ageCheckBox" Content="Age" IsChecked="true"/>
