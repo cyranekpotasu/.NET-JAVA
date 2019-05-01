@@ -1,115 +1,130 @@
-﻿using Lab03;
-using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.Win32;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Net;
+using System.Data.Entity;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Xml;
 
-namespace Lab02
+namespace Lab03
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string randomPersonUrl = "https://randomuser.me/api/?format=json";
-
+        private PersonContext context = new PersonContext();
+        private CancellationTokenSource cts = new CancellationTokenSource();
         private static readonly HttpClient client = new HttpClient();
-        BackgroundWorker worker = new BackgroundWorker();
-        int countJob;
+
+        class ProgressData
+        {
+            public int Percentage { get; set; }
+            public string Message { get; set; }
+        }
+
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-            worker.DoWork += AddPersonLoop;
-            worker.ProgressChanged += Worker_ProgressChanged;
         }
 
 
-        async void AddPersonLoop(object sender, DoWorkEventArgs e)
+        private async Task FetchPeopleAsync(IProgress<ProgressData> progress)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
-            DateTime birthday = DateTime.Parse("2008-11-01T19:35:00.0000000Z");
+            int countJob = int.Parse(Dispatcher.Invoke(() => countTextBox.Text));
             for (int i = 0; i < countJob; i++)
             {
-                int age = 1;
-                string person = null;
-                string city = null;
-                string email = null;
-                BitmapImage bitmap = null;
-                var responseJson = await client.GetStringAsync(randomPersonUrl);
-                JToken personJson = JObject.Parse(responseJson)["results"][0];
-
-                if (worker.CancellationPending)
+                cts.Token.ThrowIfCancellationRequested();
+                progress.Report(new ProgressData
                 {
-                    worker.ReportProgress(0, "Cancelled");
-                    e.Cancel = true;
+                    Percentage = i * 100 / countJob,
+                    Message = $"Fetched {i}/{countJob} people"
+                });
+
+                Person person = null;
+                try
+                {
+                    person = await GetPersonData();
+                }
+                catch (HttpRequestException)
+                {
+                    dataTextBlock.Text = "Connection error occured.";
                     return;
                 }
- 
-                if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
-                    person = (string)personJson["login"]["username"];
-
-                if (ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked) == true)
-                    age = (int)personJson["dob"]["age"];
-
-                if (cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked) == true)
-                    city = (string)personJson["location"]["city"];
-
-                if (emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked) == true)
-                    email = (string)personJson["email"];
-
-                if (birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked) == true)
-                    birthday = (DateTime)personJson["dob"]["date"];
-
-                if (imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked) == true)
-                    await Dispatcher.Invoke(async () =>
-                     {
-                         bitmap = await HttpImageReader.GetImage((string)personJson["picture"]["medium"]);
-                     });
 
                 Dispatcher.Invoke(() =>
                 {
-                    Items.Add(new Person { Name = person, Age = age, Image = bitmap, City = city, Email = email, Birthday = birthday });
+                    context.People.Add(person);
+                    context.SaveChanges();
                 });
-              
             }
-            //  worker.ReportProgress(100, "Done");
+            progress.Report(new ProgressData { Percentage = 100, Message = "Done" });
         }
 
-        public ObservableCollection<Person> Items { get; } = new ObservableCollection<Person>
+        private async Task<Person> GetPersonData()
         {
-            new Person { Name = "P1", Age = 1 },
-            new Person { Name = "P2", Age = 2 }
-        };
+            string person = null, city = null, email = null;
+            DateTime? birthday = null;
+            int age = 0;
+            BitmapImage bitmap = null;
 
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+            var personJson = await PersonFetcher.FetchPerson();
+
+            if (nameCheckBox.Dispatcher.Invoke(() => nameCheckBox.IsChecked) == true)
+                person = (string)personJson["login"]["username"];
+
+            if (ageCheckBox.Dispatcher.Invoke(() => ageCheckBox.IsChecked) == true)
+                age = (int)personJson["dob"]["age"];
+
+            if (cityCheckBox.Dispatcher.Invoke(() => cityCheckBox.IsChecked) == true)
+                city = (string)personJson["location"]["city"];
+
+            if (emailCheckBox.Dispatcher.Invoke(() => emailCheckBox.IsChecked) == true)
+                email = (string)personJson["email"];
+
+            if (birthdayCheckBox.Dispatcher.Invoke(() => birthdayCheckBox.IsChecked) == true)
+                birthday = (DateTime)personJson["dob"]["date"];
+
+            if (imageCheckBox.Dispatcher.Invoke(() => imageCheckBox.IsChecked) == true)
+                await Dispatcher.Invoke(async () =>
+                {
+                    bitmap = await HttpImageReader.GetImage((string)personJson["picture"]["medium"]);
+                });
+
+            return new Person
+            {
+                Name = person,
+                Age = age,
+                Image = ImageConverter.ToByteArray(bitmap),
+                City = city,
+                Email = email,
+                Birthday = birthday
+            };
+        }
+
+        private void OnProgressChanged(object sender, ProgressData e)
         {
-            dataProgressBar.Value = e.ProgressPercentage;
-            dataTextBlock.Text = e.UserState as string;
+            dataProgressBar.Value = e.Percentage;
+            dataTextBlock.Text = e.Message;
         }
 
         private void AddNewPersonButton_Click(object sender, RoutedEventArgs e)
         {
-            Items.Add(new Person
+            var person = new Person
             {
                 Age = int.Parse(ageTextBox.Text),
                 Name = nameTextBox.Text,
-                Image = pictureBox.Source as BitmapImage,
+                Image = ImageConverter.ToByteArray(pictureBox.Source as BitmapImage),
                 City = cityTextBox.Text,
                 Email = emailTextBox.Text,
-                Birthday = (datePicker.SelectedDate != null) ? (DateTime)datePicker.SelectedDate : DateTime.Parse("2008-11-01T19:35:00.0000000Z")
-        });
+                Birthday = datePicker.SelectedDate
+            };
+            context.People.Add(person);
+            context.SaveChanges();
         }
 
         private void LoadImageButton_Click(object sender, RoutedEventArgs e)
@@ -128,19 +143,53 @@ namespace Lab02
 
         private void CancelButton(object sender, RoutedEventArgs e)
         {
-            if (worker.WorkerSupportsCancellation == true)
+            dataTextBlock.Text = "Cancelling...";
+            cts.Cancel();
+        }
+
+        private async void RunDataDownloadAsync(object sender, RoutedEventArgs e)
+        {
+            var progress = new Progress<ProgressData>();
+            progress.ProgressChanged += OnProgressChanged;
+
+            try
             {
-                dataTextBlock.Text = "Cancelling...";
-                worker.CancelAsync();
+                await FetchPeopleAsync(progress);
+            }
+            catch (OperationCanceledException)
+            {
+                dataProgressBar.Value = 0;
+                dataTextBlock.Text = "Cancelled.";
             }
         }
 
-        private void RunDataDownload(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            countJob = int.Parse(countTextBox.Text);
-            if (worker.IsBusy != true)
-                worker.RunWorkerAsync();
+            System.Windows.Data.CollectionViewSource personViewSource =
+                ((System.Windows.Data.CollectionViewSource)(this.FindResource("personViewSource")));
+            // Load data by setting the CollectionViewSource.Source property:
+            // personViewSource.Source = [generic data source]
+            context.People.Load();
+            personViewSource.Source = context.People.Local;
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            context.Dispose();
+            client.Dispose();
+        }
+
+        private void ButtonRemove_Click(object sender, RoutedEventArgs e)
+        {
+            Person person = (Person)personListView.SelectedItem;
+            context.People.Remove(person);
+            context.SaveChanges();
+        }
+
+        private void ButtonSave_Click(object sender, RoutedEventArgs e)
+        {
+            context.SaveChanges();
+        }
     }
 }
