@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace Lab03
 {
@@ -190,6 +192,12 @@ namespace Lab03
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
             context.SaveChanges();
+        }
+
+        private void ButtonChartPie_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 form = new Window1(context);
+            form.Show();
         }
     }
 }
