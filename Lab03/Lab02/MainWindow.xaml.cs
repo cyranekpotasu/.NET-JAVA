@@ -33,7 +33,7 @@ namespace Lab03
         }
 
 
-        private async void AddPersonLoop(IProgress<ProgressData> progress)
+        private async void FetchPeopleAsync(IProgress<ProgressData> progress)
         {
             int countJob = int.Parse(Dispatcher.Invoke(() => countTextBox.Text));
             for (int i = 0; i < countJob; i++)
@@ -154,7 +154,7 @@ namespace Lab03
 
             try
             {
-                AddPersonLoop(progress);
+                FetchPeopleAsync(progress);
             }
             catch (OperationCanceledException)
             {
