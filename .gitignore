@@ -15,7 +15,7 @@ bin/
 .settings
 .classpath
 .project
-.class
+*.class
 
 # User-specific files
 *.suo
