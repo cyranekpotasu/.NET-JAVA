@@ -1,22 +1,29 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
+import javax.swing.Timer;
+import java.util.TimerTask;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import java.util.TimerTask;
-import java.util.Timer;
+
+import java.awt.EventQueue;
+
+import javafx.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 public class ButtonClick extends javax.swing.JFrame
 { 
-	Timer timer=new Timer();
+    private static final long serialVersionUID = 1L;
+    int x, y, xznak, yznak, a, b;
+    final JButton button = new JButton("Button");//Tworzenie przycisku
+	Timer timer=new Timer(20, null);
     private Random d = new Random();
-    public JButton przycisk = new JButton();
     Thread thread;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public ButtonClick() 
@@ -35,66 +42,51 @@ public class ButtonClick extends javax.swing.JFrame
     {
 
     	
-    
-        final JButton button = new JButton("Button");//Tworzenie przycisku
-        button.addMouseListener(new MouseAdapter() //Dodanie MauseListener do przycisku akcji
-        		// interfejs s�uchacza zdarze� myszy powiedzialny za klikni�cia i pojawianie si� 
-        		//kursora nad komponentem nas�uchuj�cym
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                timer.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent e) {
+                        if(x == a || y == b)
+                        {
+                            timer.stop();
+                        }
+                        else
+                            changeState(button);
+                        }
+                    });
+                    
+        button.addActionListener(new ActionListener()
         {
-            @Override
-            public void mouseClicked(MouseEvent e) //Wywo�ywany, gdy mysz wchodzi do komponentu
-            {
-                int a = d.nextInt(screenSize.width-100); //Funkcja losuje zmienna miedzy 0 a 200
-                int b = d.nextInt(screenSize.height-50);
-                int startPositionX = button.getX();
-                int startPositionY = button.getY();
-                button.setLocation(a,b); //Przenoszenie komponentu do nowej lokalizacji
-            	int difx = a-startPositionX;
-            	int dify = b-startPositionY;
-            	
-                timer.schedule(new TimerTask() {
-        			@Override
-        			public void run() {
-        				int x,y;
-        				int x1=startPositionX;
-	                	int y1=startPositionY;
-        				if(difx/Math.abs(difx)<1)
-        					x=1;
-        				else
-	                	x=difx/Math.abs(difx);
-        				if(dify/Math.abs(difx)<1)
-        					y=1;
-        				else
-        				y=dify/Math.abs(difx);
-        		         int j=startPositionY;
-        	                for(int i =0;i<Math.abs(difx);i++)
-        	                {
-        	                	x1=x+x1;
-        	                	y1=y1+y;
-        	                	/*System.out.printf("%i",x1);*/
-        	                	button.setLocation(x1, y1);
-        	                
-        	               /* {
-        	                
-        							 if(j<b)
-        							 {
-        	                		 button.setLocation(i, j); //Przenoszenie komponentu do nowej lokalizacji
-        		                	 j++;
-        							 } */
-        							 try
-        		            {
-        		                Thread.sleep(5);
-        		            } catch (InterruptedException e)
-        		            {
-        		                e.printStackTrace();
-        		            }
-        	                }
-        		        }
-        		    }, 100);
-            }
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent e) {
+                        a = d.nextInt(screenSize.width-100); //Funkcja losuje zmienna miedzy 0 a 200
+                        b = d.nextInt(screenSize.height-50);
+                        x = button.getX();
+                        y = button.getY();
+                        timer.start();
+                    }
         });
-        return button;
     }
+    });
+    return button;
+    }
+
+void changeState( JButton button)
+{
+    xznak =1;
+    yznak =1;
+    if(x>a)
+        xznak =-1;
+    if(y>b)
+        yznak =-1;
+    if(x!=a)
+        x=x+xznak;
+    if(x!=b)
+        y=y+yznak;
+
+   button.setLocation(x, y);
+}
 
     public static void main(String[] args) 
     {
