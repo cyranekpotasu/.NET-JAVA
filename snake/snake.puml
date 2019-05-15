@@ -1,0 +1,76 @@
+@startuml
+
+class Point {
+-x : int
+-y : int
++getX() : int
++getY() : int
++translate(int x, int y) : Point
++equals(Point other) : boolean
++toString() : String
+}
+
+class Snake {
+-head : Point
+-nodes : List<Point>
+-length : int
+-velocity : Point
++getHead() : Point
++getLength() : int
++addNode(Point node) : void
++move() : void
++makeTurn(Direction direction) : void
++isSave() : boolean
+}
+
+class Grid {
+-snake : Snake
+-width : int
+-height : int
+-food : Point
++getRandomPoint() : Point
++update() : void
++getWidth() : int
++getHeight() : int
++getSnake() : Snake
++getFood() : Food
+}
+
+class GameLoop{
+-framerate : int
+-grid : Grid
+-keyIsPressed : boolean
+-running : boolean
++run() : void
++isGameOver() : boolean
+}
+
+class Painter{
++{static} paint() : void
++{static} paintPoint() : void
++{static} printScore() : void
+}
+
+class Main {
+-loop : GameLoop
++start() : void
+-reset() : void
+}
+
+enum Direction {
+UP
+DOWN
+LEFT
+RIGHT
+}
+
+Snake o--- Point
+Snake --right-- Direction
+Grid *--- Snake
+Grid o--left- Point
+GameLoop *-- Grid
+Main *-- GameLoop
+Painter ---left>  Grid
+Painter ---> Point
+Painter ---left> Snake
+@enduml
