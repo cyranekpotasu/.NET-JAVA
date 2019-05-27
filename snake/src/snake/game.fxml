@@ -6,5 +6,5 @@
 
 <StackPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="snake.GameController">
-   <Canvas width="500.0" height="500.0"/>
+   <Canvas width="600.0" height="600.0" fx:id="canvas"/>
 </StackPane>
