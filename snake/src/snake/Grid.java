@@ -22,8 +22,6 @@ public class Grid implements Paintable {
     public void paint(GraphicsContext gc) {
         gc.setFill(BG_COLOR);
         gc.fillRect(0, 0, rows * SQUARE_SIZE, cols * SQUARE_SIZE);
-
-
     }
 
     public Snake getSnake() {
