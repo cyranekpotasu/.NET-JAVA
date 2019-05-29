@@ -4,7 +4,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Grid implements Paintable {
-    private static final int SQUARE_SIZE = 10;
     private static final Color BG_COLOR = new Color(0.1, 0.1, 0.1, 1);
 
     private final int rows;
