@@ -17,5 +17,6 @@ public class GameController implements Initializable {
         Grid grid = new Grid(canvas.getWidth(), canvas.getHeight());
         GraphicsContext gc = canvas.getGraphicsContext2D();
         grid.paint(gc);
+        grid.getSnake().paint(gc);
     }
 }
