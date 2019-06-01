@@ -10,12 +10,12 @@ public class GameLoop implements Runnable {
     private boolean running = false;
     private final double MS_PER_UPDATE = 1000.0 / 60.0;
 
-    GameLoop(final GameController controller) {
+    GameLoop(final GameController controller, final int snakeSpeed) {
         this.controller = controller;
 
         Canvas canvas = this.controller.getCanvas();
         Snake snake = new Snake(new Vec2D((int) (canvas.getWidth() / 2),
-                (int) (canvas.getHeight() / 2)));
+                (int) (canvas.getHeight() / 2)), snakeSpeed);
         context = canvas.getGraphicsContext2D();
         grid = new Grid(canvas.getWidth(), canvas.getHeight(), snake);
         canvas.setOnKeyPressed(new KeyHandler(grid));
