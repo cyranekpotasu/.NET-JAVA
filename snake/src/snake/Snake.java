@@ -10,13 +10,28 @@ public class Snake implements Paintable {
     private static final Color COLOR = Color.FORESTGREEN;
 
     private List<Vec2D> body;
-    private Vec2D velocity;
+    private Vec2D direction;
 
     Snake(Vec2D initial) {
         body = new LinkedList<>();
         body.add(initial);
 
-        velocity = new Vec2D(0, 0);
+        direction = new Vec2D(0, 0);
+    }
+
+    public void update() {
+        Vec2D head = body.get(body.size() - 1);
+        body.add(head.translate(direction.getX(), direction.getY()));
+        body.remove(0);
+    }
+
+    public void setDirection(Vec2D direction) {
+        if (body.size() > 1) {
+            if ((direction.getX() > 0 && direction.getX() == -this.direction.getX())
+                    || (direction.getY() > 0 && direction.getY() == -this.direction.getY()))
+                return;
+        }
+        this.direction = direction;
     }
 
     @Override
