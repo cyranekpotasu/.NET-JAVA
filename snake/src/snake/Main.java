@@ -14,6 +14,7 @@ public class Main extends Application {
         primaryStage.setTitle("Snake");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(e -> System.exit(0));
         primaryStage.show();
     }
 
