@@ -11,17 +11,22 @@ public class Grid implements Paintable {
 
     private Snake snake;
 
-    Grid(final double width, final double height) {
+    Grid(final double width, final double height, Snake snake) {
         cols = (int) width / SQUARE_SIZE;
         rows = (int) height / SQUARE_SIZE;
 
-        snake = new Snake(new Vec2D((int) width / 2, (int) height /2 ));
+        this.snake = snake;
+    }
+
+    public void update() {
+        snake.update();
     }
 
     @Override
     public void paint(GraphicsContext gc) {
         gc.setFill(BG_COLOR);
         gc.fillRect(0, 0, rows * SQUARE_SIZE, cols * SQUARE_SIZE);
+        snake.paint(gc);
     }
 
     public Snake getSnake() {
