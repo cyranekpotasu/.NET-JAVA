@@ -14,9 +14,13 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Grid grid = new Grid(canvas.getWidth(), canvas.getHeight());
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        grid.paint(gc);
-        grid.getSnake().paint(gc);
+        canvas.setFocusTraversable(true);
+
+        GameLoop loop = new GameLoop(this);
+        (new Thread(loop)).start();
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
     }
 }
