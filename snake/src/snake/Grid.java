@@ -24,6 +24,11 @@ public class Grid implements Paintable {
 
     public void update() {
         snake.update();
+        snake.setHead(wrap(snake.getHead()));
+        if (snake.getHead().equals(food.getLocation())) {
+            snake.grow();
+            food = new Food(getRandomPoint());
+        }
     }
 
     public Vec2D wrap(Vec2D position) {
