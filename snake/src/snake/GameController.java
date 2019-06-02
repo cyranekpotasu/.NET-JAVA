@@ -15,7 +15,7 @@ public class GameController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         canvas.setFocusTraversable(true);
 
-        GameLoop loop = new GameLoop(this, 3);
+        GameLoop loop = new GameLoop(this, 1);
         (new Thread(loop)).start();
     }
 
