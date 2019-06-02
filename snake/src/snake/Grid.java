@@ -26,6 +26,15 @@ public class Grid implements Paintable {
         snake.update();
     }
 
+    public Vec2D wrap(Vec2D position) {
+        int x = position.getX(), y = position.getY();
+        if (x < 0)
+            x = rows + position.getX();
+        if (y < 0)
+            y = cols + position.getY();
+        return new Vec2D(x % rows, y % cols);
+    }
+
     @Override
     public void paint(GraphicsContext gc) {
         gc.setFill(BG_COLOR);
