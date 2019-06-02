@@ -8,7 +8,7 @@ public class GameLoop implements Runnable {
     private final GraphicsContext context;
     private final Grid grid;
     private boolean running = false;
-    private final double MS_PER_UPDATE = 1000.0 / 60.0;
+    private final double MS_PER_UPDATE = 1000.0 / 20.0;
 
     GameLoop(final GameController controller, final int snakeSpeed) {
         this.controller = controller;
