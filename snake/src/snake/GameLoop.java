@@ -32,6 +32,10 @@ public class GameLoop implements Runnable {
             time = System.currentTimeMillis();
             grid.update();
             grid.paint(context);
+
+            if (grid.getSnake().isDead())
+                running = false;
+            
             passedTime = System.currentTimeMillis() - time;
             if (passedTime < MS_PER_UPDATE) {
                 try {
