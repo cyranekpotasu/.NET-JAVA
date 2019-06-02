@@ -28,10 +28,10 @@ public class Snake implements Paintable {
         body.remove(0);
     }
 
-    public void setDirection(Vec2D direction) {
+    public void setDirection(final Vec2D direction) {
         if (body.size() > 1) {
-            if ((direction.getX() > 0 && direction.getX() == -this.direction.getX())
-                    || (direction.getY() > 0 && direction.getY() == -this.direction.getY()))
+            if ((direction.getX() != 0 && direction.getX() == -this.direction.getX())
+                    || (direction.getY() != 0 && direction.getY() == -this.direction.getY()))
                 return;
         }
         this.direction = direction;
