@@ -12,6 +12,7 @@ public class Snake implements Paintable {
     private List<Vec2D> body;
     private int speedFactor;
     private Vec2D direction;
+    private boolean dead = false;
 
     Snake(Vec2D initial, final int speedFactor) {
         body = new LinkedList<>();
@@ -22,9 +23,7 @@ public class Snake implements Paintable {
     }
 
     public void update() {
-        Vec2D head = body.get(body.size() - 1);
-        body.add(head.translate(speedFactor * direction.getX(),
-                speedFactor * direction.getY()));
+        grow();
         body.remove(0);
     }
 
@@ -37,11 +36,44 @@ public class Snake implements Paintable {
         this.direction = direction;
     }
 
+    public Vec2D getHead() {
+        return body.get(body.size() - 1);
+    }
+
+    public void setHead(final Vec2D newHead) {
+        body.set(body.size() - 1, newHead);
+    }
+
+    public void grow() {
+        Vec2D newHead = getNextHead();
+        dead = body.size() > 1 && body.contains(newHead);
+        body.add(newHead);
+    }
+
+    public int length() {
+        return body.size();
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
     @Override
     public void paint(GraphicsContext gc) {
         gc.setFill(COLOR);
         for (Vec2D point : body) {
-            gc.fillRect(point.getX(), point.getY(), SQUARE_SIZE, SQUARE_SIZE);
+            gc.fillRect(SQUARE_SIZE * point.getX(), SQUARE_SIZE * point.getY(),
+                    SQUARE_SIZE, SQUARE_SIZE);
         }
+        if (dead) {
+            gc.setFill(Color.CRIMSON);
+            gc.fillRect(SQUARE_SIZE * getHead().getX(), SQUARE_SIZE * getHead().getY(),
+                    SQUARE_SIZE, SQUARE_SIZE);
+        }
+    }
+
+    private Vec2D getNextHead() {
+        return getHead().translate(speedFactor * direction.getX(),
+                speedFactor * direction.getY());
     }
 }
