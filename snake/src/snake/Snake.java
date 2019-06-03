@@ -13,6 +13,7 @@ public class Snake implements Paintable {
     private int speedFactor;
     private Vec2D direction;
     private boolean dead = false;
+    GameController gameController;
 
     Snake(Vec2D initial, final int speedFactor) {
         body = new LinkedList<>();

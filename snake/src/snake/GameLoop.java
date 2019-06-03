@@ -9,7 +9,7 @@ public class GameLoop implements Runnable {
     private final GraphicsContext context;
     private final Grid grid;
     private boolean running = false;
-    private final double MS_PER_UPDATE = 1000.0 / 20.0;
+    Settings settings = Settings.getInstance();
 
     GameLoop(final GameController controller, final int snakeSpeed) {
         this.controller = controller;
@@ -39,9 +39,9 @@ public class GameLoop implements Runnable {
             
             printScore();
             passedTime = System.currentTimeMillis() - time;
-            if (passedTime < MS_PER_UPDATE) {
+            if (passedTime < settings.MS_PER_UPDATE) {
                 try {
-                    Thread.sleep((long) (MS_PER_UPDATE - passedTime));
+                    Thread.sleep((long) (settings.MS_PER_UPDATE - passedTime));
                 } catch (InterruptedException ignored) {
                 }
             }
