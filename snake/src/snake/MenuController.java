@@ -44,6 +44,7 @@ public class MenuController implements Initializable
         Stage app_stage = getStage(event);
         //Start new singleplayer game
         handleSceneChange("game.fxml", app_stage, 600, 600);
+        gameController.StartGameSingn(app_stage);
 
     }
 
@@ -60,9 +61,20 @@ public class MenuController implements Initializable
      @FXML
       public void btnReset_click(ActionEvent actionEvent) throws IOException{
          Stage app_stage = getStage(actionEvent);
-         //Start new singleplayer game
-         handleSceneChange("game.fxml", app_stage, 600, 600);
+         Stage mainParent = ((Stage) app_stage.getOwner());
+         handleSceneChange("game.fxml", mainParent, 600, 600);
+         gameController.StartGameSingn( mainParent);
+         app_stage.close();
+
      }
+
+    @FXML
+    public void backToMainfromDialog(ActionEvent event)  throws IOException{
+        Stage app_stage = getStage(event);
+        Stage mainParent = ((Stage) app_stage.getOwner());
+        handleSceneChange("menu.fxml", mainParent, 430, 600);
+        app_stage.close();
+    }
 
                                   /*END Lose*/
 

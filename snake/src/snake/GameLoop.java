@@ -4,7 +4,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class GameLoop implements Runnable {
+public class GameLoop extends Thread {
     private final GameController controller;
     private final GraphicsContext context;
     private final Grid grid;
@@ -38,6 +38,7 @@ public class GameLoop implements Runnable {
                 if (grid.getSnake().isDead())
                     running = false;
 
+
                 printScore();
                 passedTime = System.currentTimeMillis() - time;
                 if (passedTime < settings.MS_PER_UPDATE) {
@@ -47,14 +48,19 @@ public class GameLoop implements Runnable {
                     }
                 }
             }
+            System.out.println(running);
+            System.out.println("End child");
             notify();
         }
 
     }
+    public boolean getRunning(){return running;}
 
     private void printScore() {
         context.setFill(Color.BEIGE);
         context.fillText("Score: " + (grid.getSnake().length() - 1) * 10, 10,
                 context.getCanvas().getHeight() - 10);
     }
+
+
 }

@@ -28,7 +28,7 @@
                         <String fx:value="makeTransparant" />
                     </styleClass>
                 </Button>
-                <Button fx:id="btnMainMenu" layoutX="175.0" layoutY="42.0" mnemonicParsing="false" onAction="#backToMain" prefHeight="77.0" prefWidth="75.0" styleClass="makeTransparant">
+                <Button fx:id="btnMainMenu" layoutX="175.0" layoutY="42.0" mnemonicParsing="false" onAction="#backToMainfromDialog" prefHeight="77.0" prefWidth="75.0" styleClass="makeTransparant">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor>
