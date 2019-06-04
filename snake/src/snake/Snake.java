@@ -41,6 +41,8 @@ public class Snake implements Paintable {
         return body.get(body.size() - 1);
     }
 
+    public List<Vec2D> getBody() { return body; }
+
     public void setHead(final Vec2D newHead) {
         body.set(body.size() - 1, newHead);
     }

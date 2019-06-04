@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 public class MenuController implements Initializable
 {
     private Settings settings = Settings.getInstance();
+    GameController gameController = GameController.getInstance();
 
                                /*START Difficulty*/
 
@@ -43,6 +44,7 @@ public class MenuController implements Initializable
         Stage app_stage = getStage(event);
         //Start new singleplayer game
         handleSceneChange("game.fxml", app_stage, 600, 600);
+
     }
 
 

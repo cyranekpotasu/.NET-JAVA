@@ -53,7 +53,11 @@ public class Grid implements Paintable {
     }
 
     private Vec2D getRandomPoint() {
-        Random random = new Random();
-        return new Vec2D(random.nextInt(rows), random.nextInt(cols));
+        while (true) {
+            Random random = new Random();
+            if(snake.getBody().contains(random))
+                continue;
+            return new Vec2D(random.nextInt(rows), random.nextInt(cols));
+        }
     }
 }

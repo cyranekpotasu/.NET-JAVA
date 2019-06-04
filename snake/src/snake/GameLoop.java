@@ -24,28 +24,32 @@ public class GameLoop implements Runnable {
 
     @Override
     public void run() {
-        running = true;
+        synchronized (this) {
+            running = true;
 
-        double time = 0.0;
-        double passedTime = 0.0;
+            double time = 0.0;
+            double passedTime = 0.0;
 
-        while (running) {
-            time = System.currentTimeMillis();
-            grid.update();
-            grid.paint(context);
+            while (running) {
+                time = System.currentTimeMillis();
+                grid.update();
+                grid.paint(context);
 
-            if (grid.getSnake().isDead())
-                running = false;
-            
-            printScore();
-            passedTime = System.currentTimeMillis() - time;
-            if (passedTime < settings.MS_PER_UPDATE) {
-                try {
-                    Thread.sleep((long) (settings.MS_PER_UPDATE - passedTime));
-                } catch (InterruptedException ignored) {
+                if (grid.getSnake().isDead())
+                    running = false;
+
+                printScore();
+                passedTime = System.currentTimeMillis() - time;
+                if (passedTime < settings.MS_PER_UPDATE) {
+                    try {
+                        Thread.sleep((long) (settings.MS_PER_UPDATE - passedTime));
+                    } catch (InterruptedException ignored) {
+                    }
                 }
             }
+            notify();
         }
+
     }
 
     private void printScore() {
