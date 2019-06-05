@@ -72,7 +72,7 @@ public class MenuController implements Initializable
     public void backToMainfromDialog(ActionEvent event)  throws IOException{
         Stage app_stage = getStage(event);
         Stage mainParent = ((Stage) app_stage.getOwner());
-        handleSceneChange("menu.fxml", mainParent, 430, 600);
+        handleSceneChange("menu.fxml", mainParent, 600, 600);
         app_stage.close();
     }
 
